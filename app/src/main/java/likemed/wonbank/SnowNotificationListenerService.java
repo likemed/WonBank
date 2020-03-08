@@ -6,7 +6,9 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
@@ -25,7 +27,13 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 
 public class SnowNotificationListenerService extends NotificationListenerService {
-
+    String id;
+    String tel_card1;
+    String tel_card2;
+    String tel_card3;
+    String txt_card1;
+    String txt_card2;
+    String txt_card3;
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
         handler = new Handler();
@@ -35,8 +43,44 @@ public class SnowNotificationListenerService extends NotificationListenerService
         // String title = extras.getString(NotificationCompat.EXTRA_TITLE);
         CharSequence text = extras.getCharSequence(NotificationCompat.EXTRA_TEXT);
         // CharSequence subText = extras.getCharSequence(NotificationCompat.EXTRA_SUB_TEXT);
-        if (sbn.getPackageName().equals("com.shinhan.smartcaremgr") && text.toString().contains("입금")) {
-            new ConnectThread(text.toString(), format.format(Long.valueOf(sbn.getPostTime()))).start();
+
+
+        SharedPreferences settings = getSharedPreferences("settings", 0);
+        id = settings.getString("id", "");
+        tel_card1 = settings.getString("tel_card1", "");
+        if (!tel_card1.isEmpty()) {
+            txt_card1 = settings.getString("txt_card1", "");
+        }
+        tel_card2 = settings.getString("tel_card2", "");
+        if (!tel_card2.isEmpty()) {
+            txt_card2 = settings.getString("txt_card2", "");
+        }
+        tel_card3 = settings.getString("tel_card3", "");
+        if (!tel_card3.isEmpty()) {
+            txt_card3 = settings.getString("txt_card3", "");
+        }
+        String no_card = null;
+        String tel_card = null;
+        String txt_card = null;
+        for (int i = 1; i <= 5; i++) {
+            switch (i) {
+                case 1:
+                    tel_card = tel_card1;
+                    txt_card = txt_card1;
+                    break;
+                case 2:
+                    tel_card = tel_card2;
+                    txt_card = txt_card2;
+                    break;
+                case 3:
+                    tel_card = tel_card3;
+                    txt_card = txt_card3;
+                    break;
+            }
+            if (sbn.getPackageName().equals(tel_card) && text.toString().contains(txt_card)) {
+                new ConnectThread(text.toString(), format.format(Long.valueOf(sbn.getPostTime()))).start();
+                return;
+            }
         }
         // com.shinhan.smartcaremgr
     }
@@ -62,10 +106,12 @@ public class SnowNotificationListenerService extends NotificationListenerService
         public void run() {
             try {
                 final String output = request(contents, receivedDate);
+
                 handler.post(new Runnable() {
                     public void run() {
                         String response;
                         int count = Integer.parseInt(output);
+
                         if (count == -1) {
                             response = "전송 실패";
                         } else {
@@ -122,9 +168,7 @@ public class SnowNotificationListenerService extends NotificationListenerService
                             .appendQueryParameter("id", "likemed")
                             .appendQueryParameter("no", "99")
                             .appendQueryParameter("date", receivedDate)
-                            .appendQueryParameter("sms", contents)
-                            .build()
-                            .getEncodedQuery();
+                            .appendQueryParameter("sms", contents).build().getEncodedQuery();
                     DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
                     wr.writeBytes(urlParameters);
                     wr.flush();
