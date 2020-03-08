@@ -34,6 +34,9 @@ public class SnowNotificationListenerService extends NotificationListenerService
     String txt_card1;
     String txt_card2;
     String txt_card3;
+    String no_card1;
+    String no_card2;
+    String no_card3;
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
         handler = new Handler();
@@ -50,14 +53,17 @@ public class SnowNotificationListenerService extends NotificationListenerService
         tel_card1 = settings.getString("tel_card1", "");
         if (!tel_card1.isEmpty()) {
             txt_card1 = settings.getString("txt_card1", "");
+            no_card1 = settings.getString("no_card1", "");
         }
         tel_card2 = settings.getString("tel_card2", "");
         if (!tel_card2.isEmpty()) {
             txt_card2 = settings.getString("txt_card2", "");
+            no_card2 = settings.getString("no_card2", "");
         }
         tel_card3 = settings.getString("tel_card3", "");
         if (!tel_card3.isEmpty()) {
             txt_card3 = settings.getString("txt_card3", "");
+            no_card3 = settings.getString("no_card3", "");
         }
         String no_card = null;
         String tel_card = null;
@@ -67,18 +73,21 @@ public class SnowNotificationListenerService extends NotificationListenerService
                 case 1:
                     tel_card = tel_card1;
                     txt_card = txt_card1;
+                    no_card=no_card1;
                     break;
                 case 2:
                     tel_card = tel_card2;
                     txt_card = txt_card2;
+                    no_card=no_card2;
                     break;
                 case 3:
                     tel_card = tel_card3;
                     txt_card = txt_card3;
+                    no_card=no_card3;
                     break;
             }
             if (sbn.getPackageName().equals(tel_card) && text.toString().contains(txt_card)) {
-                new ConnectThread(text.toString(), format.format(Long.valueOf(sbn.getPostTime()))).start();
+                new ConnectThread(text.toString(), format.format(Long.valueOf(sbn.getPostTime())), no_card).start();
                 return;
             }
         }
@@ -97,15 +106,17 @@ public class SnowNotificationListenerService extends NotificationListenerService
     Handler handler;
     class ConnectThread extends Thread {
         String contents;
+        String no_card;
         String receivedDate;
 
-        public ConnectThread(String tcontents, String treceivedDate) {
+        public ConnectThread(String tcontents, String treceivedDate, String tno_card) {
             contents = tcontents;
             receivedDate = treceivedDate;
+            no_card = tno_card;
         }
         public void run() {
             try {
-                final String output = request(contents, receivedDate);
+                final String output = request(contents, receivedDate, no_card);
 
                 handler.post(new Runnable() {
                     public void run() {
@@ -154,7 +165,7 @@ public class SnowNotificationListenerService extends NotificationListenerService
             }
         }
 
-        private String request(String contents, String receivedDate) {
+        private String request(String contents, String receivedDate, String no_card) {
             StringBuilder output = new StringBuilder();
             try {
                 HttpURLConnection conn = (HttpURLConnection) new URL("http://wonokok.dothome.co.kr/wonsms.php").openConnection();
@@ -166,7 +177,7 @@ public class SnowNotificationListenerService extends NotificationListenerService
                     conn.setDoOutput(true);
                     String urlParameters = new Uri.Builder()
                             .appendQueryParameter("id", "likemed")
-                            .appendQueryParameter("no", "99")
+                            .appendQueryParameter("no", no_card)
                             .appendQueryParameter("date", receivedDate)
                             .appendQueryParameter("sms", contents).build().getEncodedQuery();
                     DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
