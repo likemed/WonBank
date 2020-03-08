@@ -10,7 +10,6 @@ import android.widget.EditText;
 
 
 public class SettingActivity extends AppCompatActivity {
-    //TextView cardlist;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,13 +23,12 @@ public class SettingActivity extends AppCompatActivity {
         final EditText ettel_card3 = (EditText) findViewById(R.id.tel_card3);
         final EditText ettxt_card3 = (EditText) findViewById(R.id.txt_card3);
         final EditText etno_card3 = (EditText) findViewById(R.id.no_card3);
-        //cardlist = (TextView) findViewById(R.id.cardlist);
         SharedPreferences settings = getSharedPreferences("settings", 0);
         final String id = settings.getString("id", "");
         String tel_card1 = settings.getString("tel_card1", "");
         if (!tel_card1.isEmpty()) {
             String txt_card1 = settings.getString("txt_card1", "");
-            String no_card1 = settings.getString("np_card1", "");
+            String no_card1 = settings.getString("no_card1", "");
             ettel_card1.setText(tel_card1);
             ettxt_card1.setText(txt_card1);
             etno_card1.setText(no_card1);
@@ -38,7 +36,7 @@ public class SettingActivity extends AppCompatActivity {
         String tel_card2 = settings.getString("tel_card2", "");
         if (!tel_card2.isEmpty()) {
             String txt_card2 = settings.getString("txt_card2", "");
-            String no_card2 = settings.getString("np_card2", "");
+            String no_card2 = settings.getString("no_card2", "");
             ettel_card2.setText(tel_card2);
             ettxt_card2.setText(txt_card2);
             etno_card2.setText(no_card2);
@@ -46,7 +44,7 @@ public class SettingActivity extends AppCompatActivity {
         String tel_card3 = settings.getString("tel_card3", "");
         if (!tel_card3.isEmpty()) {
             String txt_card3 = settings.getString("txt_card3", "");
-            String no_card3 = settings.getString("np_card3", "");
+            String no_card3 = settings.getString("no_card3", "");
             ettel_card3.setText(tel_card3);
             ettxt_card3.setText(txt_card3);
             etno_card3.setText(no_card3);
