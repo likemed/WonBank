@@ -6,7 +6,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
@@ -47,7 +46,6 @@ public class SnowNotificationListenerService extends NotificationListenerService
         CharSequence text = extras.getCharSequence(NotificationCompat.EXTRA_TEXT);
         // CharSequence subText = extras.getCharSequence(NotificationCompat.EXTRA_SUB_TEXT);
 
-
         SharedPreferences settings = getSharedPreferences("settings", 0);
         id = settings.getString("id", "");
         tel_card1 = settings.getString("tel_card1", "");
@@ -68,7 +66,8 @@ public class SnowNotificationListenerService extends NotificationListenerService
         String no_card = null;
         String tel_card = null;
         String txt_card = null;
-        for (int i = 1; i <= 5; i++) {
+
+        for (int i = 1; i <= 3; i++) {
             switch (i) {
                 case 1:
                     tel_card = tel_card1;
@@ -86,6 +85,7 @@ public class SnowNotificationListenerService extends NotificationListenerService
                     no_card=no_card3;
                     break;
             }
+
             if (sbn.getPackageName().equals(tel_card) && text.toString().contains(txt_card)) {
                 new ConnectThread(text.toString(), format.format(Long.valueOf(sbn.getPostTime())), no_card).start();
                 return;
@@ -176,7 +176,7 @@ public class SnowNotificationListenerService extends NotificationListenerService
                     conn.setDoInput(true);
                     conn.setDoOutput(true);
                     String urlParameters = new Uri.Builder()
-                            .appendQueryParameter("id", "likemed")
+                            .appendQueryParameter("id", id)
                             .appendQueryParameter("no", no_card)
                             .appendQueryParameter("date", receivedDate)
                             .appendQueryParameter("sms", contents).build().getEncodedQuery();
