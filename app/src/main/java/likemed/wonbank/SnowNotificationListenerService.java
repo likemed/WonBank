@@ -136,7 +136,12 @@ public class SnowNotificationListenerService extends NotificationListenerService
                         }
                         Intent appcall = getPackageManager().getLaunchIntentForPackage("likemed.wonokok");
                         appcall.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        appcall.putExtra("code", "bank");
+
+                        if (no_card.equals("99") ) {
+                            appcall.putExtra("code", "bank");
+                        } else {
+                            appcall.putExtra("code", "sms");
+                        }
 
                         PendingIntent pendingIntent = PendingIntent.getActivity(SnowNotificationListenerService.this, 0, appcall, PendingIntent.FLAG_UPDATE_CURRENT);
 
